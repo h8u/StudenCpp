@@ -1,1 +1,1 @@
-StudenCpp
+StudentCpp
