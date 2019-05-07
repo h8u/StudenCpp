@@ -68,10 +68,7 @@ int main()
 	int click;
 	while (true) 
 	{
-		if (array[1][1] == 1)
-		{
-			std::cout << "Ya win" << std::endl;
-		}
+		
 		click = _getch(); //Проверка нажатия клавиши
 		if (click == 72) //Стрелка вверх
 		{
@@ -101,7 +98,7 @@ int main()
 						}
 					}
 				}
-				std::cout << "Koordinati 0: " << izero << "\t" << jzero << std::endl;
+				
 			}
 			else { std::cout << "No way!" << std::endl; }
 		}
@@ -131,7 +128,7 @@ int main()
 						}
 					}
 				}
-				std::cout << "Koordinati 0: " << izero << "\t" << jzero << std::endl;
+				
 			}
 			else { std::cout << "No way!" << std::endl; }
 
@@ -196,10 +193,6 @@ int main()
 		}
 	}
 	
-	if (array[1][1] == 1)
-	{
-		std::cout << "Ya win" << std::endl;
-	}
 
 	return 0;
 }
