@@ -1,200 +1,294 @@
-﻿#include <conio.h>
-#include <iostream>
-#include <Windows.h>
+﻿#include <iostream>
 #include <ctime>
-#include <cstdlib>
+#include <windows.h>
+#include <conio.h>
+#include <string.h>
+
+using namespace std;
+
+class Puzzle
+{
+private:
+	int lineDesk[16];
+	int Desk[4][4];
+	int izero, jzero;
+	int moves = 0;
+
+public:
+	Puzzle() //Создание доски и ее заполнение
+	{
+		srand(time(NULL));
+		for (int i = 0; i < 16; i++)
+		{
+			lineDesk[i] = i;
+		}
+
+		do
+		{
+			for (int i = 0; i < 16; i++)
+			{
+				int j = rand() % 16;
+				int temp = lineDesk[i];
+				lineDesk[i] = lineDesk[j];
+				lineDesk[j] = temp;
+			}
+		} while (solutionFind() == false);
+
+		for (int i = 0, k = 0; i < 4; i++)
+		{
+			for (int j = 0; j < 4; j++)
+			{
+				Desk[i][j] = lineDesk[i + j + k];
+			}
+			k += 3;
+		}
+		findZero();
+		if (finish())
+		{
+			cout << "Win!" << endl;
+
+		}
+
+	}
+
+	bool solutionFind() //Проверка решаемости доски
+	{
+		int inv = 0;
+		for (int i = 0; i < 16; i++)
+		{
+			for (int j = 0; j < i; ++j)
+			{
+				if (lineDesk[j] > lineDesk[i])
+				{
+					++inv;
+				}
+			}
+		}
+
+		for (int i = 0; i < 16; ++i)
+		{
+			if (lineDesk[i] == 0)
+			{
+				inv += 1 + i / 4;
+			}
+		}
+
+		if (inv & 1)
+		{
+			return false;
+		}
+		else
+		{
+			return true;
+		}
+	}
+
+	void findZero() //Поиск пустой клетки
+	{
+		if (finish())
+		{
+			cout << "Win!" << endl;
+		}
+
+		for (int i = 0; i < 4; i++)
+		{
+			for (int j = 0; j < 4; j++)
+			{
+				if (Desk[i][j] == 0)
+				{
+					izero = i;
+					jzero = j;
+				}
+			}
+		}
+
+	}
+
+	void up()
+	{
+		if (izero > 0)
+		{
+			cout << endl;
+			std::swap(Desk[izero][jzero], Desk[izero - 1][jzero]);
+			Display();
+			Moves();
+			findZero();
+
+		}
+		else
+		{
+			cout << "No way!" << endl;
+		}
+
+	}
+
+	void down()
+	{
+		if (izero < 3)
+		{
+			std::swap(Desk[izero][jzero], Desk[izero + 1][jzero]);
+			Display();
+			Moves();
+			findZero();
+
+		}
+		else
+		{
+			cout << "No way!" << endl;
+		}
+	}
+
+	void left()
+	{
+		if (jzero > 0)
+		{
+			std::swap(Desk[izero][jzero], Desk[izero][jzero - 1]);
+			Display();
+			Moves();
+			findZero();
+
+		}
+		else
+		{
+			cout << "No way!" << endl;
+		}
+	}
+
+	void right()
+	{
+		if (jzero < 3)
+		{
+			std::swap(Desk[izero][jzero], Desk[izero][jzero + 1]);
+			Display();
+			Moves();
+			findZero();
+
+		}
+		else
+		{
+			cout << "No way!" << endl;
+		}
+	}
+
+	void Display()
+	{
+		system("cls");
+		for (int i = 0; i < 4; i++)
+		{
+			for (int j = 0; j < 4; j++)
+			{
+				cout << Desk[i][j] << "\t ";
+			}
+			cout << endl;
+		}
+		cout << endl;
+
+	}
+
+	void menu()
+	{
+		cout << "Welcome to 15 Puzzle game!\n" << endl;
+		cout << "1. Play \n2. Exit\n" << endl;
+		cout << "Controls: \nMoving: arrows. Exit: Esc" << endl;
+		unsigned int entKey; cin >> entKey;
+		switch (entKey)
+		{
+		case 1:
+			system("cls");
+			Puzzle();
+			Display();
+		case 2:
+			break;
+		}
+	}
+
+	bool finish()
+	{
+		int finishArr[16];
+		for (int i = 0; i < 16; i++)
+		{
+			finishArr[i] = i;
+		}
+
+		int tempDesk[4][4];
+		for (int i = 0; i < 4; i++)
+		{
+			for (int j = 0; j < 4; j++)
+			{
+				tempDesk[i][j] = Desk[i][j];
+			}
+		}
+
+		int nowArr[16];
+		for (int i = 0; i < 4; i++)
+		{
+			for (int j = 0; j < 4; j++)
+			{
+				nowArr[i * 4 + j] = tempDesk[i][j];
+			}
+		}
+
+		int i = 0;
+		for (; i < 16; ++i)
+		{
+			if (finishArr[i] != nowArr[i])
+			{
+				break;
+			}
+		}
+
+		if (i == 16)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+
+		return 0;
+	}
+
+	void Moves()
+	{
+		moves++;
+		cout << "\nMoves: " << moves << endl;
+	}
+
+};
+
 
 int main()
 {
-	srand(time(NULL));
-	int num[16];
-	
-	for (int i = 0; i < 16; i++) //Заполнил его значениями от 0 до 9 по порядку
-	{
-		num[i] = i;
-	}
-	for (int i = 0; i < 16; i++)
-	{
-		std::cout << num[i] << "\t";
-	}
-	std::cout << std::endl;
-	for (int i = 0; i < 16; ++i) //Перемешал элементы массива
-	{
-		std::swap(num[i], num[rand() % 9]);
-	}
-	for (int i = 0; i < 16; i++)
-	{
-		std::cout << num[i] << "\t";
-	}
-	std::cout << std::endl << std::endl;
-	int array[4][4];
-	
-	int k = 0;
-	for (int i = 0; i < 4; i++)
-	{
-		
-		for (int j = 0; j < 4; j++)
-		{
-			array[i][j] = num[i + j + k];
-		}
-		k = k + 3;
-	}
-	for (int i = 0; i < 4; i++)
-	{
-		for (int j = 0; j < 4; j++)
-		{
-			std::cout << array[i][j] << "\t";
-		}
-		std::cout << std::endl;
-	}
-	std::cout << std::endl << std::endl;
-	
-	unsigned int izero, jzero;
-	//Поиск элемента со значением 0.
-	for (int i = 0; i < 4; i++) 
-	{
-		for (int j = 0; j < 4; j++)
-		{
-			if (array[i][j] == 0)
-			{
-				izero = i;
-				jzero = j;
-			}
-		}
-	}
-	std::cout << izero << "\t" << jzero << std::endl;
-	
-	std::cout << array[izero][jzero] << std::endl;
-	int click;
-	while (true) 
-	{
-		
-		click = _getch(); //Проверка нажатия клавиши
-		if (click == 72) //Стрелка вверх
-		{
-			if (izero > 0)
-			{
-				system("cls");
+	Puzzle player;
+	player.menu();
 
-				std::swap(array[izero][jzero], array[izero - 1][jzero]);
-
-				for (int i = 0; i < 4; i++)
-				{
-					for (int j = 0; j < 4; j++)
-					{
-						std::cout << array[i][j] << "\t";
-					}
-					std::cout << std::endl;
-				}
-				std::cout << std::endl;
-				for (int i = 0; i < 4; i++)
-				{
-					for (int j = 0; j < 4; j++)
-					{
-						if (array[i][j] == 0)
-						{
-							izero = i;
-							jzero = j;
-						}
-					}
-				}
-				
-			}
-			else { std::cout << "No way!" << std::endl; }
-		}
-		if (click == 80) //Стрелка вниз
+	while (true)
+	{
+		unsigned int entKey;
+		entKey = _getch();
+		if (entKey == 72)
 		{
-			if (izero < 3)
-			{
-				system("cls");
-				std::swap(array[izero][jzero], array[izero + 1][jzero]);
-				for (int i = 0; i < 4; i++)
-				{
-					for (int j = 0; j < 4; j++)
-					{
-						std::cout << array[i][j] << "\t";
-					}
-					std::cout << std::endl;
-				}
-				std::cout << std::endl;
-				for (int i = 0; i < 4; i++)
-				{
-					for (int j = 0; j < 4; j++)
-					{
-						if (array[i][j] == 0)
-						{
-							izero = i;
-							jzero = j;
-						}
-					}
-				}
-				
-			}
-			else { std::cout << "No way!" << std::endl; }
-
+			player.up();
 		}
-		if (click == 75) //Стрелка влево
+		if (entKey == 80)
 		{
-			if (jzero > 0)
-			{
-				system("cls");
-				std::swap(array[izero][jzero], array[izero][jzero - 1]);
-				for (int i = 0; i < 4; i++)
-				{
-					for (int j = 0; j < 4; j++)
-					{
-						std::cout << array[i][j] << "\t";
-					}
-					std::cout << std::endl;
-				}
-				std::cout << std::endl;
-				for (int i = 0; i < 4; i++)
-				{
-					for (int j = 0; j < 4; j++)
-					{
-						if (array[i][j] == 0)
-						{
-							izero = i;
-							jzero = j;
-						}
-					}
-				}
-			}
-			else { std::cout << "No way!" << std::endl; }
+			player.down();
 		}
-		if (click == 77) //Стрелка вправо
+		if (entKey == 75)
 		{
-			if (jzero < 3)
-			{
-				system("cls");
-				std::swap(array[izero][jzero], array[izero][jzero + 1]);
-				for (int i = 0; i < 4; i++)
-				{
-					for (int j = 0; j < 4; j++)
-					{
-						std::cout << array[i][j] << "\t";
-					}
-					std::cout << std::endl;
-				}
-				std::cout << std::endl;
-				for (int i = 0; i < 4; i++)
-				{
-					for (int j = 0; j < 4; j++)
-					{
-						if (array[i][j] == 0)
-						{
-							izero = i;
-							jzero = j;
-						}
-					}
-				}
-			}
-			else { std::cout << "No way!" << std::endl; }
+			player.left();
+		}
+		if (entKey == 77)
+		{
+			player.right();
+		}
+		if (entKey == 27)
+		{
+			player.menu();
 		}
 	}
-	
 
 	return 0;
 }
-
 
