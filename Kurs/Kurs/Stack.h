@@ -86,13 +86,3 @@ public:
 	}
 };
 
-int main()
-{
-	Stack<int> st;
-	st.Push(5);
-	st.Print();
-	st.Pop();
-	st.Print();
-
-	return 0;
-}
